@@ -1,0 +1,14 @@
+# Virtual environment - Ignore your virtual environment.
+venv/    
+
+# Python cache files - compiled cache files and should not go to GitHub
+__pycache__/
+*.pyc
+# gnore all .pyc files 
+
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment variables - Later, when we use APIs (Gemini/OpenAI/Ollama settings), we may store secrets
+.env
