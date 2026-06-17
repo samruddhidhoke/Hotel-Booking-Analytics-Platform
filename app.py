@@ -44,3 +44,61 @@ df = pd.read_sql(
 
 # Generate dataset summary
 summary = dataset_summary(df)
+
+# Display summary dictionary temporarily
+st.write(summary)
+
+st.divider()
+
+st.header("📊 Dataset Overview")
+
+col1, col2, col3, col4, col5 = st.columns(5)
+
+with col1:
+    st.metric(
+        label="Rows",
+        value=summary["rows"]
+    )
+    
+with col2:
+    st.metric(
+        label="Columns",
+        value=summary["columns"]
+    )
+
+with col3:
+    st.metric(
+        label="Missing Values",
+        value=summary["missing_values"]
+    )
+
+with col4:
+    st.metric(
+        label="Duplicates",
+        value=summary["duplicates"]
+    )
+
+with col5:
+    st.metric(
+        label="Memory (MB)",
+        value=summary["memory_usage_mb"]
+    )    
+    
+st.divider()
+
+st.header("📋 Column Information")    
+  
+column_info = pd.DataFrame(
+    {
+        "Column Name":
+            df.columns,
+
+        "Data Type":
+            df.dtypes.astype(str)
+    }
+)  
+
+st.dataframe(
+    column_info,
+    use_container_width=True
+)    
