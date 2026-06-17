@@ -1,0 +1,16 @@
+USE HotelBookingEDA;
+GO
+
+
+SELECT COUNT(*) AS Total_Rows
+FROM hotel_bookings;
+
+
+SELECT TOP 5 *
+FROM hotel_bookings;
+
+SELECT
+COLUMN_NAME,
+DATA_TYPE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'hotel_bookings';
