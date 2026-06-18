@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+from modules.categorical_analysis import (
+    categorical_summary
+)
 
 from utils.database import get_engine
 from modules.summary import dataset_summary
@@ -17,7 +20,6 @@ from modules.numerical_analysis import (
 from modules.missing_analysis import (
     missing_value_analysis
 )
-
 
 st.set_page_config(
     page_title="Hotel Booking Analytics & Automated EDA Platform",
@@ -68,6 +70,10 @@ missing_df = (
 
 numerical_df = (
     numerical_summary(df)
+)
+
+categorical_df = (
+    categorical_summary(df)
 )
 
 # Display summary dictionary temporarily
@@ -304,3 +310,53 @@ st.plotly_chart(
     fig,
     use_container_width=True
 )    
+
+st.divider()
+
+st.header(
+    "🔤 Categorical Features Analysis"
+)
+
+st.dataframe(
+    categorical_df,
+    use_container_width=True
+)
+
+st.subheader(
+    "Categorical Dataset Metrics"
+)
+
+c1, c2 = st.columns(2)
+
+with c1:
+    st.metric(
+        "Categorical Features",
+        len(categorical_df)
+    )
+
+with c2:
+    st.metric(
+        "Total Unique Categories",
+        int(
+            categorical_df[
+                "Unique Values"
+            ]
+            .sum()
+        )
+    )
+
+st.subheader(
+    "Unique Values Across Features"
+)
+
+fig = px.bar(
+    categorical_df,
+    x="Column",
+    y="Unique Values",
+    title="Unique Categories Across Features"
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
