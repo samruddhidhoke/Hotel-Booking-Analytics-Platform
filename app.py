@@ -6,6 +6,14 @@ import plotly.express as px
 from utils.database import get_engine
 from modules.summary import dataset_summary
 
+from modules.data_preprocessing import (
+    fix_data_types
+)
+
+from modules.numerical_analysis import (
+    numerical_summary
+)
+
 from modules.missing_analysis import (
     missing_value_analysis
 )
@@ -49,11 +57,17 @@ df = pd.read_sql(
     engine
 )
 
+df = fix_data_types(df)
+
 # Generate dataset summary
 summary = dataset_summary(df)
 
 missing_df = (
     missing_value_analysis(df)
+)
+
+numerical_df = (
+    numerical_summary(df)
 )
 
 # Display summary dictionary temporarily
@@ -239,3 +253,54 @@ with q3:                                # Card 3
             2
         )
     )    
+    
+st.divider()
+
+st.header(
+    "🔢 Numerical Features Analysis"
+)
+  
+st.dataframe(
+    numerical_df,
+    use_container_width=True
+)    
+
+st.subheader(
+    "Numerical Dataset Metrics"
+)
+
+n1, n2 = st.columns(2)
+
+with n1:
+    st.metric(
+        "Numerical Features",
+        len(numerical_df)
+    )
+
+with n2:
+    st.metric(
+        "Total Numerical Cells",
+        int(
+            df[
+                numerical_df.index
+            ]
+            .count()
+            .sum()
+        )
+    )
+    
+st.subheader(
+    "Average Values of Numerical Features"
+)
+
+fig = px.bar(
+    numerical_df,
+    x=numerical_df.index,
+    y="mean",
+    title="Mean of Numerical Features"
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)    

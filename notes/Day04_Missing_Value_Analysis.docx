@@ -1,0 +1,387 @@
+Perfect. Since this is a **daily revision note**, keep it to around **1.5 pages maximum**.
+
+---
+
+# DAY 4 NOTES
+
+# Missing Value Analysis & Data Quality Dashboard
+
+---
+
+# Goal
+
+Build a reusable missing value analysis module and integrate missing value insights and data quality metrics into the Streamlit dashboard.
+
+---
+
+# Tasks Completed
+
+---
+
+## Step 1: Created Missing Value Module
+
+File:
+
+```text id="r6m7w8"
+modules/missing_analysis.py
+```
+
+Purpose:
+
+Separate missing value logic from UI code and make it reusable.
+
+---
+
+## Step 2: Investigated Missing Values
+
+Initial result:
+
+```python id="zr4q0o"
+df.isnull().sum().sum()
+```
+
+Output:
+
+```text id="kt0iv6"
+0
+```
+
+But Kaggle documentation mentioned missing values.
+
+---
+
+## Step 3: Performed Data Investigation
+
+Used:
+
+```python id="7g2kz8"
+value_counts(dropna=False)
+```
+
+Found:
+
+| Column   | Missing Value Representation |
+| -------- | ---------------------------- |
+| agent    | "NULL"                       |
+| company  | "NULL"                       |
+| children | "NA"                         |
+| country  | Actual missing values        |
+
+---
+
+## Important Learning
+
+Missing values are not always:
+
+```text id="7eop5x"
+NaN
+```
+
+They can be:
+
+```text id="3bfjlwm"
+NULL
+NA
+N/A
+''
+Unknown
+0
+-1
+```
+
+Always investigate before preprocessing.
+
+---
+
+## Step 4: Converted String Values to Actual Missing Values
+
+```python id="gjlwm4"
+df = df.replace(
+    [
+        '',
+        'NULL',
+        'NA',
+        'null',
+        'nan'
+    ],
+    pd.NA
+)
+```
+
+Purpose:
+
+Convert string representations into actual missing values that Pandas can detect.
+
+---
+
+## Step 5: Calculated Missing Values
+
+```python id="jlwm5"
+missing_count = df.isnull().sum()
+
+missing_percent = (
+    missing_count
+    / len(df)
+) * 100
+```
+
+Purpose:
+
+Calculate:
+
+* Missing count
+* Missing percentage
+
+---
+
+## Step 6: Created Missing Value Summary Table
+
+```python id="jlwm6"
+missing_df = pd.DataFrame(...)
+```
+
+Purpose:
+
+Generate structured summary of missing values.
+
+Output:
+
+| Column   | Missing Count | Missing Percentage |
+| -------- | ------------: | -----------------: |
+| company  |        112593 |              94.31 |
+| agent    |         16340 |              13.69 |
+| country  |           488 |               0.41 |
+| children |             4 |               0.00 |
+
+---
+
+## Step 7: Integrated Module into Dashboard
+
+Backend Flow:
+
+```text id="jlwm7"
+DataFrame
+      ↓
+missing_value_analysis(df)
+      ↓
+missing_df
+      ↓
+Dashboard
+```
+
+---
+
+## Step 8: Built Missing Value KPI Cards
+
+Displayed:
+
+* Total Missing Values
+* Columns With Missing Values
+
+Purpose:
+
+Provide quick assessment of data quality.
+
+---
+
+## Step 9: Displayed Missing Value Summary Table
+
+Used:
+
+```python id="jlwm8"
+st.dataframe()
+```
+
+Purpose:
+
+Display interactive missing value information.
+
+---
+
+## Step 10: Created Interactive Bar Chart
+
+Used:
+
+```python id="jlwm9"
+px.bar()
+st.plotly_chart()
+```
+
+Purpose:
+
+Visualize missing values across columns.
+
+---
+
+## Step 11: Added Automated Recommendations
+
+Examples:
+
+* Remove `company` because more than 90% values are missing.
+* Investigate `agent`.
+* Impute `country`.
+* `children` has negligible missing values.
+
+Purpose:
+
+Provide actionable insights instead of only displaying numbers.
+
+---
+
+## Step 12: Built Data Quality Score Section
+
+Calculated:
+
+### Total Cells
+
+```python id="jlwm10"
+rows × columns
+```
+
+### Completeness %
+
+```python id="jlwm11"
+(
+    total_cells
+    - total_missing
+)
+/
+total_cells
+× 100
+```
+
+### Duplicate Rate %
+
+```python id="jlwm12"
+duplicates
+/
+rows
+× 100
+```
+
+### Overall Quality Score
+
+```text id="jlwm13"
+Completeness
+      +
+(100 - Duplicate Rate)
+-----------------------
+           2
+```
+
+Purpose:
+
+Provide a single KPI representing dataset quality.
+
+---
+
+# Architecture Achieved
+
+```text id="jlwm14"
+SQL Server
+      ↓
+Pandas DataFrame
+      ↓
+Missing Value Module
+      ↓
+Missing Value Summary
+      ↓
+Metric Cards
+      ↓
+Bar Chart
+      ↓
+Recommendations
+      ↓
+Data Quality Score
+```
+
+---
+
+# Files Created
+
+```text id="jlwm15"
+modules/missing_analysis.py
+test_missing.py
+test_nulls.py
+```
+
+---
+
+# Files Modified
+
+```text id="jlwm16"
+app.py
+```
+
+---
+
+# Key Learnings
+
+* Never assume missing values are stored as NaN.
+* Always investigate actual data representation.
+* Business logic should be placed inside reusable modules.
+* Data quality assessment is an important part of EDA.
+* Good dashboards provide insights and recommendations, not only charts.
+
+---
+
+# Possible Interview Questions
+
+### Q1. Why did `df.isnull()` initially return zero missing values?
+
+**Answer:** Missing values were imported as strings (`"NULL"` and `"NA"`) instead of actual null values.
+
+---
+
+### Q2. Why is `value_counts(dropna=False)` useful during EDA?
+
+**Answer:** It helps identify how missing values and uncommon values are actually stored in the dataset.
+
+---
+
+### Q3. Why calculate percentages along with missing counts?
+
+**Answer:** Counts alone lack context. Percentages help determine the severity of missing data.
+
+---
+
+### Q4. Why might you remove the `company` column?
+
+**Answer:** More than 94% values are missing, making the feature unreliable and potentially uninformative.
+
+---
+
+### Q5. Why create a data quality score?
+
+**Answer:** It provides a single high-level indicator of dataset health and helps prioritize preprocessing efforts.
+
+---
+
+# End of Day 4 Status
+
+```text id="jlwm17"
+Dataset Overview           ✅
+Column Information         ✅
+Missing Value Analysis     ✅
+Interactive Charts         ✅
+Recommendations            ✅
+Data Quality Score         ✅
+```
+
+---
+
+# Git Commit
+
+```powershell id="jlwm18"
+git add .
+
+git commit -m "Built missing value analysis and data quality dashboard"
+```
+
+---
+
+### One-line Revision
+
+```text id="jlwm19"
+Investigated hidden missing values, built a reusable missing value analysis module, integrated visualizations and recommendations, and added data quality scoring to the dashboard.
+```
