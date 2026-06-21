@@ -9,6 +9,10 @@ from modules.categorical_analysis import (
 from utils.database import get_engine
 from modules.summary import dataset_summary
 
+from modules.correlation_analysis import (
+    correlation_matrix
+)
+
 from modules.data_preprocessing import (
     fix_data_types
 )
@@ -76,6 +80,10 @@ categorical_df = (
     categorical_summary(df)
 )
 
+corr_df = (
+    correlation_matrix(df)
+)
+
 # Display summary dictionary temporarily
 #st.write(summary)
 
@@ -131,7 +139,7 @@ column_info = pd.DataFrame(
 
 st.dataframe(
     column_info,
-    use_container_width=True
+    width="stretch"
 )    
 
 st.divider()
@@ -169,7 +177,7 @@ st.subheader(                       # Display Missing Value Table
 
 st.dataframe(
     missing_df,
-    use_container_width=True
+    width="stretch"
 )    
 
 fig = px.bar(                   # Build Chart
@@ -181,7 +189,7 @@ fig = px.bar(                   # Build Chart
 
 st.plotly_chart(
     fig,
-    use_container_width=True
+    width=True
 )
 
 st.subheader(                   # Recommendations Section
@@ -268,7 +276,7 @@ st.header(
   
 st.dataframe(
     numerical_df,
-    use_container_width=True
+    width="stretch"
 )    
 
 st.subheader(
@@ -308,7 +316,7 @@ fig = px.bar(
 
 st.plotly_chart(
     fig,
-    use_container_width=True
+    width="stretch"
 )    
 
 st.divider()
@@ -319,7 +327,7 @@ st.header(
 
 st.dataframe(
     categorical_df,
-    use_container_width=True
+    width="stretch"
 )
 
 st.subheader(
@@ -358,5 +366,114 @@ fig = px.bar(
 
 st.plotly_chart(
     fig,
-    use_container_width=True
+    width="stretch"
 )
+
+st.divider()
+
+st.header(
+    "📈 Distribution Analysis"
+)
+
+selected_column = st.selectbox(
+    "Select Numerical Feature",
+    numerical_df.index
+)
+
+fig = px.histogram(                             # histogram
+    df,
+    x=selected_column,
+    title=f"Distribution of {selected_column}",
+    nbins=30
+)
+
+st.plotly_chart(
+    fig,
+    width="stretch"
+)
+
+st.subheader(
+    "Selected Feature Statistics"
+)
+
+c1, c2, c3, c4 = st.columns(4)
+
+with c1:
+    st.metric(
+        "Mean",
+        round(
+            df[selected_column].mean(),
+            2
+        )
+    )
+
+with c2:
+    st.metric(
+        "Median",
+        round(
+            df[selected_column].median(),
+            2
+        )
+    )
+
+with c3:
+    st.metric(
+        "Minimum",
+        round(
+            df[selected_column].min(),
+            2
+        )
+    )
+
+with c4:
+    st.metric(
+        "Maximum",
+        round(
+            df[selected_column].max(),
+            2
+        )
+    )
+    
+st.subheader(
+    "Distribution Insights"
+)
+
+mean_value = (
+    df[selected_column]
+    .mean()
+)
+
+median_value = (
+    df[selected_column]
+    .median()
+)
+
+if mean_value > median_value:
+    st.info(
+        "Distribution appears right-skewed."
+    )
+
+elif mean_value < median_value:
+    st.info(
+        "Distribution appears left-skewed."
+    )
+
+else:
+    st.info(
+        "Distribution appears approximately symmetric."
+    )
+        
+st.info(
+    "Distribution appears ..."
+)
+
+st.divider()
+
+st.header(
+    "📉 Correlation Analysis"
+)
+
+st.dataframe(
+    corr_df,
+    width="stretch"
+)        
