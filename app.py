@@ -76,6 +76,47 @@ df = fix_data_types(df)
 # Generate dataset summary
 summary = dataset_summary(df)
 
+st.sidebar.title(
+    "🏨 Hotel Booking Analytics"
+)
+
+st.sidebar.header(
+    "Dataset Information"
+)
+
+st.sidebar.write(
+    "Dataset: Hotel Bookings"
+)
+
+st.sidebar.metric(
+    "Rows",
+    f"{summary['rows']:,}"
+)
+
+st.sidebar.metric(
+    "Columns",
+    summary["columns"]
+)
+
+st.sidebar.metric(
+    "Duplicates",
+    f"{summary['duplicates']:,}"
+)
+
+st.sidebar.header(
+    "Technologies Used"
+)
+
+st.sidebar.markdown(
+    """
+    - Python
+    - SQL Server
+    - Pandas
+    - Streamlit
+    - Plotly
+    """
+)
+
 missing_df = (
     missing_value_analysis(df)
 )
@@ -684,3 +725,53 @@ st.header(                      # Automated Business Insights
 
 for item in insights:
     st.success(item)
+    
+st.divider()                    # Download Reports
+
+st.header(
+    "📥 Download Reports"
+)    
+
+missing_csv = (                 # Create CSV Strings
+    missing_df
+    .to_csv()
+)
+
+numerical_csv = (
+    numerical_df
+    .to_csv()
+)
+
+outlier_csv = (
+    outlier_df
+    .to_csv()
+)
+
+d1, d2, d3 = st.columns(3)          # Create Layout
+
+with d1:                            # Missing Report Download
+
+    st.download_button(
+        label="Download Missing Report",
+        data=missing_csv,
+        file_name="missing_report.csv",
+        mime="text/csv"
+    )
+    
+with d2:                            # numerical report
+
+    st.download_button(
+        label="Download Numerical Report",
+        data=numerical_csv,
+        file_name="numerical_report.csv",
+        mime="text/csv"
+    )    
+    
+with d3:                        # outlier report
+
+    st.download_button(
+        label="Download Outlier Report",
+        data=outlier_csv,
+        file_name="outlier_report.csv",
+        mime="text/csv"
+    )    
