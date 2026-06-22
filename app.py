@@ -2,12 +2,20 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+from utils.database import get_engine
+from modules.summary import dataset_summary
+
 from modules.categorical_analysis import (
     categorical_summary
 )
 
-from utils.database import get_engine
-from modules.summary import dataset_summary
+from modules.insight_engine import (
+    generate_insights
+)
+
+from modules.outlier_analysis import (
+    outlier_summary
+)
 
 from modules.correlation_analysis import (
     correlation_matrix
@@ -83,6 +91,11 @@ categorical_df = (
 corr_df = (
     correlation_matrix(df)
 )
+
+outlier_df = (
+    outlier_summary(df)
+)
+
 
 # Display summary dictionary temporarily
 #st.write(summary)
@@ -180,16 +193,21 @@ st.dataframe(
     width="stretch"
 )    
 
-fig = px.bar(                   # Build Chart
+fig = px.bar(               # chart
     missing_df,
     x=missing_df.index,
-    y="Missing Count",
-    title="Missing Values by Column"
+    y="Missing Percentage",
+    title="Missing Percentage by Column",
+    text="Missing Percentage"
+)
+
+fig.update_traces(
+    textposition="outside"
 )
 
 st.plotly_chart(
     fig,
-    width=True
+    width="stretch"
 )
 
 st.subheader(                   # Recommendations Section
@@ -238,6 +256,15 @@ quality_score = (                       # Overall Quality Score
         - duplicate_rate
     )
 ) / 2
+
+insights = (
+    generate_insights(
+        summary,
+        missing_df,
+        outlier_df,
+        quality_score
+    )
+)
 
 q1, q2, q3 = st.columns(3)              # Create Metric Cards
 
@@ -463,9 +490,9 @@ else:
         "Distribution appears approximately symmetric."
     )
         
-st.info(
-    "Distribution appears ..."
-)
+# st.info(
+#     "Distribution appears ..."
+# )
 
 st.divider()
 
@@ -476,4 +503,184 @@ st.header(
 st.dataframe(
     corr_df,
     width="stretch"
-)        
+)    
+
+fig = px.imshow(
+    corr_df,
+    text_auto=True,
+    aspect="auto",
+    title="Correlation Heatmap"
+)
+
+st.plotly_chart(
+    fig,
+    width="stretch"
+)    
+
+st.subheader(               #strong correlations table
+    "Strong Correlations"
+)
+
+corr_long = (
+    corr_df
+    .stack()
+    .reset_index()
+)
+
+corr_long.columns = [
+    "Feature 1",
+    "Feature 2",
+    "Correlation"
+]
+
+corr_long = (               # removing self correlations
+    corr_long[
+        corr_long[
+            "Feature 1"
+        ]
+        !=
+        corr_long[
+            "Feature 2"
+        ]
+    ]
+)
+
+corr_long["Pair"] = (               # removing duplicate pairs
+    corr_long[
+        ["Feature 1", "Feature 2"]
+    ]
+    .apply(
+        lambda x:
+        "_".join(
+            sorted(x)
+        ),
+        axis=1
+    )
+)
+
+corr_long = (
+    corr_long
+    .drop_duplicates(
+        subset="Pair"
+    )
+)
+
+top_corr = (                # Show Top Correlations
+    corr_long
+    .reindex(
+        corr_long[
+            "Correlation"
+        ]
+        .abs()
+        .sort_values(
+            ascending=False
+        )
+        .index
+    )
+    .head(10)
+)
+
+st.dataframe(               # display
+    top_corr[
+        [
+            "Feature 1",
+            "Feature 2",
+            "Correlation"
+        ]
+    ],
+    width="stretch"
+)
+
+st.subheader(               # Automatic Business Insights
+    "Correlation Insights"
+)
+
+st.info(
+    """
+    • Positive correlations indicate variables moving together.
+
+    • Negative correlations indicate inverse relationships.
+
+    • Weak correlations suggest independent behaviour.
+
+    • Correlation does not imply causation.
+    """
+)
+
+st.divider()                    # Outlier Analysis
+
+st.header(
+    "📦 Outlier Analysis"
+)
+
+st.dataframe(                   # Display Table
+    outlier_df,
+    width="stretch"
+)
+
+st.subheader(
+    "Outlier Metrics"
+)
+
+o1, o2 = st.columns(2)
+
+with o1:
+    st.metric(
+        "Columns With Outliers",
+        int(
+            (
+                outlier_df[
+                    "Outlier Count"
+                ]
+                > 0
+            ).sum()
+        )
+    )
+
+with o2:
+    st.metric(
+        "Total Outliers",
+        int(
+            outlier_df[
+                "Outlier Count"
+            ]
+            .sum()
+        )
+    )
+    
+fig = px.bar(                       # Chart
+    outlier_df,
+    x="Column",
+    y="Outlier Percentage",
+    title="Outlier Percentage by Feature"
+)
+
+st.plotly_chart(
+    fig,
+    width="stretch"
+)
+    
+st.subheader(                                # Recommendations
+    "Recommendations"
+)
+
+st.info(
+    """
+    • High outlier percentages require business investigation.
+
+    • Not all outliers should be removed automatically.
+
+    • Outliers may indicate rare but valid business scenarios.
+
+    • Outlier treatment decisions should depend on domain knowledge.
+    """
+)    
+
+st.divider()
+
+st.header(                      # Automated Business Insights
+    "🧠 Automated Business Insights"
+)
+
+for item in insights:
+    st.success(item)
