@@ -1,32 +1,15 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 
 from utils.database import get_engine
 from modules.summary import dataset_summary
-
-from modules.categorical_analysis import (
-    categorical_summary
-)
-
-from modules.insight_engine import (
-    generate_insights
-)
 
 from modules.outlier_analysis import (
     outlier_summary
 )
 
-from modules.correlation_analysis import (
-    correlation_matrix
-)
-
 from modules.data_preprocessing import (
     fix_data_types
-)
-
-from modules.numerical_analysis import (
-    numerical_summary
 )
 
 from modules.missing_analysis import (
@@ -40,20 +23,24 @@ st.set_page_config(
 )
 
 st.title(
-    "🏨 Hotel Booking Analytics & Automated EDA Platform"
+    "🏨 Hotel Booking Analytics Platform"
 )
 
-st.subheader(
-    "Automated Data Profiling, Business Intelligence "
-    "and AI-Generated Insights"
+st.caption(
+    "Built with Python • SQL Server • Pandas • Streamlit • Plotly"
 )
-
-st.divider()
 
 st.markdown(
     """
-    This dashboard performs automated exploratory data analysis
-    on hotel booking data and provides business intelligence insights.
+    ### Transforming Hotel Booking Data into Actionable Business Intelligence
+
+    An enterprise-style analytics platform that combines
+    SQL Server, Python, and Streamlit to automate data profiling,
+    quality assessment, exploratory analysis, and business insight generation.
+
+    Designed to help analysts identify data quality issues,
+    uncover booking trends, detect anomalies, and generate
+    data-driven recommendations through an interactive dashboard.
     """
 )
 
@@ -76,61 +63,15 @@ df = fix_data_types(df)
 # Generate dataset summary
 summary = dataset_summary(df)
 
-st.sidebar.title(
-    "🏨 Hotel Booking Analytics"
-)
-
-st.sidebar.header(
-    "Dataset Information"
-)
-
-st.sidebar.write(
-    "Dataset: Hotel Bookings"
-)
-
-st.sidebar.metric(
-    "Rows",
-    f"{summary['rows']:,}"
-)
-
-st.sidebar.metric(
-    "Columns",
-    summary["columns"]
-)
-
-st.sidebar.metric(
-    "Duplicates",
-    f"{summary['duplicates']:,}"
-)
-
-st.sidebar.header(
-    "Technologies Used"
-)
-
-st.sidebar.markdown(
-    """
-    - Python
-    - SQL Server
-    - Pandas
-    - Streamlit
-    - Plotly
-    """
-)
-
 missing_df = (
     missing_value_analysis(df)
 )
 
-numerical_df = (
-    numerical_summary(df)
-)
-
-categorical_df = (
-    categorical_summary(df)
-)
-
-corr_df = (
-    correlation_matrix(df)
+total_missing = (
+    missing_df[
+        "Missing Count"
+    ]
+    .sum()
 )
 
 outlier_df = (
@@ -141,131 +82,7 @@ outlier_df = (
 # Display summary dictionary temporarily
 #st.write(summary)
 
-st.divider()
 
-st.header("📊 Dataset Overview")
-
-col1, col2, col3, col4, col5 = st.columns(5)
-
-with col1:
-    st.metric(
-        label="Rows",
-        value=summary["rows"]
-    )
-    
-with col2:
-    st.metric(
-        label="Columns",
-        value=summary["columns"]
-    )
-
-with col3:
-    st.metric(
-        label="Missing Values",
-        value=summary["missing_values"]
-    )
-
-with col4:
-    st.metric(
-        label="Duplicates",
-        value=summary["duplicates"]
-    )
-
-with col5:
-    st.metric(
-        label="Memory (MB)",
-        value=summary["memory_usage_mb"]
-    )    
-    
-st.divider()
-
-st.header("📋 Column Information")    
-  
-column_info = pd.DataFrame(
-    {
-        "Column Name":
-            df.columns,
-
-        "Data Type":
-            df.dtypes.astype(str)
-    }
-)  
-
-st.dataframe(
-    column_info,
-    width="stretch"
-)    
-
-st.divider()
-
-st.header("⚠️ Missing Value Analysis")
-
-total_missing = (               # Create Missing Value Metrics
-    missing_df[
-        "Missing Count"
-    ]
-    .sum()
-)
-
-columns_with_missing = (
-    len(missing_df)
-)
-
-m1, m2 = st.columns(2)          #Create Metric Cards
-
-with m1:
-    st.metric(
-        "Total Missing Values",
-        int(total_missing)
-    )
-
-with m2:
-    st.metric(
-        "Columns With Missing Values",
-        columns_with_missing
-    )
-  
-st.subheader(                       # Display Missing Value Table
-    "Missing Value Summary"
-)
-
-st.dataframe(
-    missing_df,
-    width="stretch"
-)    
-
-fig = px.bar(               # chart
-    missing_df,
-    x=missing_df.index,
-    y="Missing Percentage",
-    title="Missing Percentage by Column",
-    text="Missing Percentage"
-)
-
-fig.update_traces(
-    textposition="outside"
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch"
-)
-
-st.subheader(                   # Recommendations Section
-    "Recommendations"
-)
-
-st.info(
-    """
-    • company has more than 90% missing values and may be removed.
-
-    • agent contains moderate missing values and requires business investigation.
-
-    • country has very few missing values and can be imputed.
-
-    • children has negligible missing values.
-    """
-)
 
 st.divider()
 
@@ -297,15 +114,6 @@ quality_score = (                       # Overall Quality Score
         - duplicate_rate
     )
 ) / 2
-
-insights = (
-    generate_insights(
-        summary,
-        missing_df,
-        outlier_df,
-        quality_score
-    )
-)
 
 q1, q2, q3 = st.columns(3)              # Create Metric Cards
 
@@ -339,439 +147,190 @@ with q3:                                # Card 3
 st.divider()
 
 st.header(
-    "🔢 Numerical Features Analysis"
-)
-  
-st.dataframe(
-    numerical_df,
-    width="stretch"
-)    
-
-st.subheader(
-    "Numerical Dataset Metrics"
-)
-
-n1, n2 = st.columns(2)
-
-with n1:
-    st.metric(
-        "Numerical Features",
-        len(numerical_df)
-    )
-
-with n2:
-    st.metric(
-        "Total Numerical Cells",
-        int(
-            df[
-                numerical_df.index
-            ]
-            .count()
-            .sum()
-        )
-    )
-    
-st.subheader(
-    "Average Values of Numerical Features"
-)
-
-fig = px.bar(
-    numerical_df,
-    x=numerical_df.index,
-    y="mean",
-    title="Mean of Numerical Features"
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch"
-)    
-
-st.divider()
-
-st.header(
-    "🔤 Categorical Features Analysis"
-)
-
-st.dataframe(
-    categorical_df,
-    width="stretch"
-)
-
-st.subheader(
-    "Categorical Dataset Metrics"
+    "🚀 Platform Capabilities"
 )
 
 c1, c2 = st.columns(2)
 
 with c1:
-    st.metric(
-        "Categorical Features",
-        len(categorical_df)
+
+    st.success(
+        """
+        📊 Automated Data Profiling
+
+        Dataset overview,
+        schema inspection,
+        and data quality assessment.
+        """
+    )
+
+    st.success(
+        """
+        📈 Exploratory Data Analysis
+
+        Numerical,
+        categorical,
+        and distribution analysis.
+        """
     )
 
 with c2:
-    st.metric(
-        "Total Unique Categories",
-        int(
-            categorical_df[
-                "Unique Values"
-            ]
-            .sum()
-        )
+
+    st.success(
+        """
+        📉 Correlation & Outlier Detection
+
+        Identify hidden relationships
+        and anomalous records.
+        """
     )
 
-st.subheader(
-    "Unique Values Across Features"
-)
+    st.success(
+        """
+        🧠 Insight Generation & Reporting
 
-fig = px.bar(
-    categorical_df,
-    x="Column",
-    y="Unique Values",
-    title="Unique Categories Across Features"
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch"
-)
+        Automated business insights
+        and downloadable reports.
+        """
+    )
 
 st.divider()
 
 st.header(
-    "📈 Distribution Analysis"
-)
+    "📊 Dataset Snapshot"
+)    
 
-selected_column = st.selectbox(
-    "Select Numerical Feature",
-    numerical_df.index
-)
+k1, k2, k3, k4 = st.columns(4)
 
-fig = px.histogram(                             # histogram
-    df,
-    x=selected_column,
-    title=f"Distribution of {selected_column}",
-    nbins=30
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch"
-)
-
-st.subheader(
-    "Selected Feature Statistics"
-)
-
-c1, c2, c3, c4 = st.columns(4)
-
-with c1:
+with k1:
     st.metric(
-        "Mean",
-        round(
-            df[selected_column].mean(),
-            2
-        )
+        "Bookings",
+        f"{summary['rows']:,}"
     )
 
-with c2:
+with k2:
     st.metric(
-        "Median",
-        round(
-            df[selected_column].median(),
-            2
-        )
+        "Features",
+        summary["columns"]
     )
 
-with c3:
+with k3:
     st.metric(
-        "Minimum",
-        round(
-            df[selected_column].min(),
-            2
-        )
+        "Duplicate Records",
+        f"{summary['duplicates']:,}"
     )
 
-with c4:
+with k4:
     st.metric(
-        "Maximum",
+        "Quality Score",
         round(
-            df[selected_column].max(),
+            quality_score,
             2
         )
     )
     
-st.subheader(
-    "Distribution Insights"
-)
-
-mean_value = (
-    df[selected_column]
-    .mean()
-)
-
-median_value = (
-    df[selected_column]
-    .median()
-)
-
-if mean_value > median_value:
-    st.info(
-        "Distribution appears right-skewed."
-    )
-
-elif mean_value < median_value:
-    st.info(
-        "Distribution appears left-skewed."
-    )
-
-else:
-    st.info(
-        "Distribution appears approximately symmetric."
-    )
-        
-# st.info(
-#     "Distribution appears ..."
-# )
-
-st.divider()
-
-st.header(
-    "📉 Correlation Analysis"
-)
-
-st.dataframe(
-    corr_df,
-    width="stretch"
-)    
-
-fig = px.imshow(
-    corr_df,
-    text_auto=True,
-    aspect="auto",
-    title="Correlation Heatmap"
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch"
-)    
-
-st.subheader(               #strong correlations table
-    "Strong Correlations"
-)
-
-corr_long = (
-    corr_df
-    .stack()
-    .reset_index()
-)
-
-corr_long.columns = [
-    "Feature 1",
-    "Feature 2",
-    "Correlation"
-]
-
-corr_long = (               # removing self correlations
-    corr_long[
-        corr_long[
-            "Feature 1"
-        ]
-        !=
-        corr_long[
-            "Feature 2"
-        ]
-    ]
-)
-
-corr_long["Pair"] = (               # removing duplicate pairs
-    corr_long[
-        ["Feature 1", "Feature 2"]
-    ]
-    .apply(
-        lambda x:
-        "_".join(
-            sorted(x)
-        ),
-        axis=1
-    )
-)
-
-corr_long = (
-    corr_long
-    .drop_duplicates(
-        subset="Pair"
-    )
-)
-
-top_corr = (                # Show Top Correlations
-    corr_long
-    .reindex(
-        corr_long[
-            "Correlation"
-        ]
-        .abs()
-        .sort_values(
-            ascending=False
-        )
-        .index
-    )
-    .head(10)
-)
-
-st.dataframe(               # display
-    top_corr[
-        [
-            "Feature 1",
-            "Feature 2",
-            "Correlation"
-        ]
-    ],
-    width="stretch"
-)
-
-st.subheader(               # Automatic Business Insights
-    "Correlation Insights"
-)
-
 st.info(
-    """
-    • Positive correlations indicate variables moving together.
-
-    • Negative correlations indicate inverse relationships.
-
-    • Weak correlations suggest independent behaviour.
-
-    • Correlation does not imply causation.
+    f"""
+    The platform analyzes {summary['rows']:,} hotel booking records across
+    {summary['columns']} business and operational attributes,
+    providing automated profiling, quality assessment,
+    exploratory analysis, and business intelligence reporting.
     """
 )
-
-st.divider()                    # Outlier Analysis
-
-st.header(
-    "📦 Outlier Analysis"
-)
-
-st.dataframe(                   # Display Table
-    outlier_df,
-    width="stretch"
-)
-
-st.subheader(
-    "Outlier Metrics"
-)
-
-o1, o2 = st.columns(2)
-
-with o1:
-    st.metric(
-        "Columns With Outliers",
-        int(
-            (
-                outlier_df[
-                    "Outlier Count"
-                ]
-                > 0
-            ).sum()
-        )
-    )
-
-with o2:
-    st.metric(
-        "Total Outliers",
-        int(
-            outlier_df[
-                "Outlier Count"
-            ]
-            .sum()
-        )
-    )
-    
-fig = px.bar(                       # Chart
-    outlier_df,
-    x="Column",
-    y="Outlier Percentage",
-    title="Outlier Percentage by Feature"
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch"
-)
-    
-st.subheader(                                # Recommendations
-    "Recommendations"
-)
-
-st.info(
-    """
-    • High outlier percentages require business investigation.
-
-    • Not all outliers should be removed automatically.
-
-    • Outliers may indicate rare but valid business scenarios.
-
-    • Outlier treatment decisions should depend on domain knowledge.
-    """
-)    
 
 st.divider()
 
-st.header(                      # Automated Business Insights
-    "🧠 Automated Business Insights"
-)
-
-for item in insights:
-    st.success(item)
-    
-st.divider()                    # Download Reports
-
 st.header(
-    "📥 Download Reports"
-)    
-
-missing_csv = (                 # Create CSV Strings
-    missing_df
-    .to_csv()
+    "🧭 Analysis Modules"
 )
 
-numerical_csv = (
-    numerical_df
-    .to_csv()
-)
+m1, m2, m3 = st.columns(3)
 
-outlier_csv = (
-    outlier_df
-    .to_csv()
-)
+with m1:
 
-d1, d2, d3 = st.columns(3)          # Create Layout
+    st.info(
+        """
+        📊 Dataset Overview
 
-with d1:                            # Missing Report Download
+        Dataset structure,
+        schema and profiling.
+        """
+    )
 
-    st.download_button(
-        label="Download Missing Report",
-        data=missing_csv,
-        file_name="missing_report.csv",
-        mime="text/csv"
+    st.info(
+        """
+        🔢 Numerical Analysis
+
+        Statistical analysis
+        of numerical features.
+        """
+    )
+
+    st.info(
+        """
+        📈 Distribution Analysis
+
+        Histograms and
+        distribution insights.
+        """
+    )
+
+with m2:
+
+    st.info(
+        """
+        ⚠️ Missing Value Analysis
+
+        Missing data detection
+        and recommendations.
+        """
+    )
+
+    st.info(
+        """
+        🔤 Categorical Analysis
+
+        Category distributions
+        and frequency analysis.
+        """
+    )
+
+    st.info(
+        """
+        📉 Correlation Analysis
+
+        Feature relationships
+        and heatmaps.
+        """
+    )
+
+with m3:
+
+    st.info(
+        """
+        📦 Outlier Analysis
+
+        Outlier detection
+        using IQR methodology.
+        """
+    )
+
+    st.info(
+        """
+        🧠 Business Insights
+
+        Automated insight
+        generation engine.
+        """
+    )
+
+    st.info(
+        """
+        📥 Download Reports
+
+        Export analytical
+        reports as CSV files.
+        """
     )
     
-with d2:                            # numerical report
-
-    st.download_button(
-        label="Download Numerical Report",
-        data=numerical_csv,
-        file_name="numerical_report.csv",
-        mime="text/csv"
-    )    
     
-with d3:                        # outlier report
-
-    st.download_button(
-        label="Download Outlier Report",
-        data=outlier_csv,
-        file_name="outlier_report.csv",
-        mime="text/csv"
-    )    
