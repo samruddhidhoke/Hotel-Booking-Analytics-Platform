@@ -4,21 +4,21 @@
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-Database-red?logo=microsoftsqlserver)
 ![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit)
 ![Plotly](https://img.shields.io/badge/Plotly-Visualization-3F4F75?logo=plotly)
-![License](https://img.shields.io/badge/License-MIT-green)
+![License](https://img.shields.io/github/license/samruddhidhoke/Hotel-Booking-Analytics-Platform)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?logo=streamlit)](https://hotel-booking-analytics-platform.streamlit.app/)
 
 ## 🌐 Live Demo
 
-**Try the live application here:**
+🚀 **Explore the deployed application:**
+<https://hotel-booking-analytics-platform.streamlit.app/>
 
-https://hotel-booking-analytics-platform.streamlit.app/
+> **Note:** The deployed Streamlit application loads data from the included CSV dataset for cloud compatibility, while local development uses SQL Server as the primary data source.
 
 
 > **Built as part of my Data Analytics Portfolio to demonstrate end-to-end data analysis, SQL integration, dashboard development, and business intelligence reporting.**
 
 
-An end-to-end Hotel Booking Analytics platform built using **Python, SQL Server, and Streamlit** to automate exploratory data analysis, data quality assessment, business insight generation, and reporting.
-
-The platform helps analysts identify data quality issues, discover booking patterns, detect anomalies, and generate actionable business insights through an interactive multi-page dashboard.
+An end-to-end Hotel Booking Analytics platform built using Python, SQL Server, Streamlit, and Plotly that automates exploratory data analysis (EDA), data quality assessment, business insight generation, and interactive reporting through a multi-page dashboard.
 
 ---
 
@@ -26,7 +26,7 @@ The platform helps analysts identify data quality issues, discover booking patte
 
 Hotel booking datasets often contain missing values, duplicate records, outliers, and hidden relationships that make analysis time-consuming and error-prone.
 
-This project automates the complete exploratory data analysis (EDA) workflow, enabling faster and more reliable business decision-making.
+This project automates the complete exploratory data analysis (EDA) workflow, enabling analysts to evaluate data quality, identify hidden patterns, detect anomalies, and generate actionable business insights through an interactive dashboard.
 
 ---
 
@@ -45,6 +45,17 @@ This project automates the complete exploratory data analysis (EDA) workflow, en
 
 ---
 
+## 📈 Business Value
+
+This platform enables analysts and business users to:
+
+* Improve data quality assessment through automated profiling.
+* Detect missing values, duplicates, correlations, and outliers efficiently.
+* Reduce manual exploratory data analysis (EDA) effort.
+* Generate automated business insights to accelerate data-driven analysis.
+* Support data-driven decision-making through interactive dashboards and downloadable reports.
+
+---
 ## 🛠️ Technology Stack
 
 | Category              | Technologies         |
@@ -74,7 +85,7 @@ This project automates the complete exploratory data analysis (EDA) workflow, en
 
 ## 🏗️ System Architecture
 
-The project follows a modular architecture where data flows through multiple processing layers:
+The platform follows a modular architecture that separates data ingestion, preprocessing, analytical processing, visualization, and reporting into independent, reusable components.
 
 **Hotel Booking Dataset → SQL Server → Database Connection Layer → Data Preprocessing → Analytics Engine → Streamlit Multi-Page Dashboard → Business Insights & CSV Reports**
 
@@ -82,11 +93,12 @@ The project follows a modular architecture where data flows through multiple pro
 
 ![System Architecture](assets/architecture.png)
 
+The architecture separates data ingestion, preprocessing, analytics, visualization, and reporting into independent modules, improving maintainability, scalability, and code reusability.
 ---
 
 ## ⚙️ Project Workflow
 
-1. Import the hotel booking dataset into SQL Server.
+1. Load the hotel booking dataset into SQL Server.
 2. Establish a database connection using SQLAlchemy.
 3. Preprocess and validate the dataset.
 4. Perform automated exploratory data analysis (EDA).
@@ -131,13 +143,13 @@ hotel-booking-analytics-platform/
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/samruddhidhoke/Hotel-Booking-Analytics-Platform.git
 ```
 
 ### 2. Navigate to the project
 
 ```bash
-cd hotel-booking-analytics-platform
+cd Hotel-Booking-Analytics-Platform
 ```
 
 ### 3. Create a virtual environment
@@ -212,6 +224,7 @@ This project strengthened my understanding of:
 * Data visualization using Plotly
 * Rule-based business insight generation
 * Git and GitHub project management
+* Environment-aware application deployment using Streamlit Community Cloud
 
 ---
 
@@ -222,9 +235,9 @@ This project strengthened my understanding of:
 * Interactive dashboard filters
 * Predictive analytics for booking cancellation
 * Docker containerization
-* Cloud database integration (Azure/AWS)
+* Cloud database integration using Azure SQL or AWS RDS
 * User authentication and role-based access
-* Interactive KPI dashboard with real-time database updates
+* Real-time KPI dashboard with live database synchronization
 
 ---
 
@@ -234,7 +247,7 @@ This project strengthened my understanding of:
 
 Computer Engineering Graduate | Aspiring Data Analyst & Data Scientist
 
-* GitHub: https://github.com/samruddhidhoke
-* LinkedIn: https://linkedin.com/in/samruddhi--dhoke
+- **GitHub:** <https://github.com/samruddhidhoke>
+- **LinkedIn:** <https://linkedin.com/in/samruddhi--dhoke>
 
 If you found this project useful, feel free to ⭐ this repository.
