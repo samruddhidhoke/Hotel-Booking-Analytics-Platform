@@ -6,6 +6,13 @@
 ![Plotly](https://img.shields.io/badge/Plotly-Visualization-3F4F75?logo=plotly)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+## 🌐 Live Demo
+
+**Try the live application here:**
+
+https://hotel-booking-analytics-platform.streamlit.app/
+
+
 > **Built as part of my Data Analytics Portfolio to demonstrate end-to-end data analysis, SQL integration, dashboard development, and business intelligence reporting.**
 
 
