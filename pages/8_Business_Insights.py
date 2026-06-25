@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 
-from utils.database import get_engine
+from modules.data_loader import (
+    load_data
+)
 
 from modules.summary import (
     dataset_summary
@@ -34,17 +36,7 @@ st.title(
     "🧠 Automated Business Insights"
 )
 
-engine = get_engine()
-
-query = """
-SELECT *
-FROM hotel_bookings
-"""
-
-df = pd.read_sql(
-    query,
-    engine
-)
+df = load_data()
 
 df = fix_data_types(df)
 

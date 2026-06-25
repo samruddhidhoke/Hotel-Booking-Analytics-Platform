@@ -1,7 +1,10 @@
 import streamlit as st
 import pandas as pd
 
-from utils.database import get_engine
+from modules.data_loader import (
+    load_data
+)
+
 from modules.summary import dataset_summary
 
 from modules.outlier_analysis import (
@@ -44,19 +47,7 @@ st.markdown(
     """
 )
 
-# Create database connection
-engine = get_engine()
-
-# Load data from SQL Server
-query = """
-SELECT *
-FROM hotel_bookings
-"""
-
-df = pd.read_sql(
-    query,
-    engine
-)
+df = load_data()
 
 df = fix_data_types(df)
 

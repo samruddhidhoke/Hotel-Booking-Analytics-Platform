@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-from utils.database import get_engine
+from modules.data_loader import (
+    load_data
+)
 
 from modules.data_preprocessing import (
     fix_data_types
@@ -23,17 +25,7 @@ st.title(
     "📈 Distribution Analysis"
 )
 
-engine = get_engine()
-
-query = """
-SELECT *
-FROM hotel_bookings
-"""
-
-df = pd.read_sql(
-    query,
-    engine
-)
+df = load_data()
 
 df = fix_data_types(df)
 
